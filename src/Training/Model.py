@@ -1,24 +1,48 @@
 # https://www.tensorflow.org/tutorials/load_data/csv
-import cv2
 import pandas as pd
 import numpy as np
 import tensorflow as tf
-import mediapipe as mp
-import keras
-from src.Util.Detector import Detector
-from sklearn.preprocessing import LabelBinarizer, LabelEncoder
-from DatasetConstructor import get_normalized_relative_landmarks
+import os
+from src.Training.DatasetConstructor import get_normalized_relative_landmarks
+from src.Training.DataBuilder import OUTPUT_FILE_PATH
+
+MODEL_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), "Trained", "trained_model")
+
+GESTURES = {
+    "Open_Palm": 0, 0: "Open_Palm",
+    "Fist": 1, 1: "Fist"
+}
+
+NUM_RECOGNIZED_GESTURES = len(GESTURES) / 2
+EPOCHS = 5
+BATCH_SIZE = 64
+
+
+class GestureModel:
+
+    def __init__(self):
+        self.model = tf.keras.models.load_model(MODEL_PATH)
+
+    def get_gesture_prediction(self, img, hand) -> str:
+        arr = get_normalized_relative_landmarks(img, hand)
+        arr = np.array(arr).reshape((1, 42))
+        predict = self.model.predict(arr).argmax()
+        return GESTURES[predict]
+
+    def __get_highest_probability(self, arr):
+        pass
 
 
 def main():
-    dataframe = pd.read_csv('./Data/concat.csv')
+    dataframe = pd.read_csv(OUTPUT_FILE_PATH)
 
     features = dataframe.copy()
     labels = features.pop('gesture')
-    labels = LabelEncoder().fit_transform(labels.array)
     features = np.array(features)
 
-    print(labels)
+    for index, val in enumerate(labels):
+        labels[index] = GESTURES[val]
+    labels = labels.to_numpy().astype(int)
 
     model = tf.keras.models.Sequential([
         # input layer
@@ -29,12 +53,19 @@ def main():
         tf.keras.layers.Dense(64, activation="relu"),
         tf.keras.layers.Dropout(0.5),
 
+        tf.keras.layers.Dense(64, activation="relu"),
+        tf.keras.layers.Dropout(0.5),
+
         # softmax activation returns probabilities of results
-        tf.keras.layers.Dense(2, activation="softmax")
+        tf.keras.layers.Dense(NUM_RECOGNIZED_GESTURES, activation="softmax")
     ])
     model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=['accuracy'])
+    model.fit(features, labels, epochs=EPOCHS, batch_size=BATCH_SIZE)
 
-    model.fit(features, labels, epochs=5, batch_size=1)
+    save = True if input("Save Model (yes/no): ") == "yes" else False
+
+    if save:
+        model.save(MODEL_PATH, overwrite=True)
 
     # TODO: Compile and save model
     # detector = Detector()

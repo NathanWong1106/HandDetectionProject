@@ -16,6 +16,8 @@ def main():
     capture = cv2.VideoCapture(0)
     detector = Detector()
 
+    capture_landmarks = False
+
     with open(f'./Data/{set_name}.csv', append, newline="") as file:
 
         header_arr = get_std_header()
@@ -26,12 +28,23 @@ def main():
             success, img = capture.read()
             key = cv2.waitKey(1)
 
-            # When 'c' is pressed then add the points to the dataset
+            # # When 'c' is pressed then add the points to the dataset
+            # if key == ord('c'):
+            #     landmarks = detector.get_landmarks(img).multi_hand_landmarks
+            #     write_landmarks_to_dataset(img, landmarks, file, set_name)
+            #
+            # elif key == ord('q'):
+            #     cv2.destroyAllWindows()
+            #     break
+
             if key == ord('c'):
-                landmarks = detector.get_landmarks(img).multi_hand_landmarks
+                capture_landmarks = not capture_landmarks
+
+            landmarks = detector.get_landmarks(img).multi_hand_landmarks
+            if landmarks is not None and capture_landmarks:
                 write_landmarks_to_dataset(img, landmarks, file, set_name)
 
-            elif key == ord('q'):
+            if key == ord('q'):
                 cv2.destroyAllWindows()
                 break
 
