@@ -41,11 +41,14 @@ def main():
                 capture_landmarks = not capture_landmarks
 
             landmarks = detector.get_landmarks(img).multi_hand_landmarks
+
             if landmarks is not None and capture_landmarks:
-                write_landmarks_to_dataset(img, landmarks, file, set_name)
-                write_landmarks_to_dataset(cv2.flip(img, 0), landmarks, file, set_name)
-                write_landmarks_to_dataset(cv2.flip(img, 1), landmarks, file, set_name)
-                write_landmarks_to_dataset(cv2.flip(img, -1), landmarks, file, set_name)
+                landmark_arr = [landmarks]
+                for flipIndex in range(-1, 2):
+                    landmark_arr.append(detector.get_landmarks(cv2.flip(img, flipIndex)).multi_hand_landmarks)
+
+                for elem in landmark_arr:
+                    write_landmarks_to_dataset(img, elem, file, set_name)
 
             if key == ord('q'):
                 cv2.destroyAllWindows()
