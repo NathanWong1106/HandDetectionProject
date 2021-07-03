@@ -14,12 +14,21 @@ GESTURES = {
     "Fist": 1, 1: "Fist",
     "Pointing": 2, 2: "Pointing",
     "Spooder-Man": 3, 3: "Spooder-Man",
-    "Peace": 4, 4: "Peace"
+    "Peace": 4, 4: "Peace",
+    "ASL_A": 5, 5: "A",
+    "ASL_B": 6, 6: "B",
+    "ASL_C": 7, 7: "C",
+    "ASL_D": 8, 8: "D",
+    "ASL_E": 9, 9: "E",
+    "Italian": 10, 10: "Spaghet",
+    "OK": 11, 11: "OK",
 }
 
 NUM_RECOGNIZED_GESTURES = len(GESTURES) / 2
-EPOCHS = 16
-BATCH_SIZE = 64
+EPOCHS = 20
+BATCH_SIZE = 32
+
+PROBABILITY_THRESHOLD = 0.5
 
 
 class GestureModel:
@@ -30,14 +39,24 @@ class GestureModel:
     def get_gesture_prediction(self, img, hand) -> str:
         arr = get_normalized_relative_landmarks(img, hand)
         arr = np.array(arr).reshape((1, 42))
-        predict = self.model.predict(arr).argmax()
-        return GESTURES[predict]
+        predict = self.model.predict(arr)
 
-    def __get_highest_probability(self, arr):
-        pass
+        prediction_index = self.__get_highest_probability(predict)
+        return GESTURES[prediction_index] if prediction_index > -1 else "Unknown"
+
+    def __get_highest_probability(self, arr) -> int:
+        max_prob, index = -1, 0
+
+        for row in arr:
+            for i, val in enumerate(row):
+                if val > max_prob:
+                    max_prob = val
+                    index = i
+
+        return index if max_prob > PROBABILITY_THRESHOLD else -1
 
 
-def main():
+def train_model():
     dataframe = pd.read_csv(OUTPUT_FILE_PATH)
 
     features = dataframe.copy()
@@ -78,4 +97,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    train_model()

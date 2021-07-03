@@ -6,10 +6,9 @@ import mediapipe as mp
 from src.Util.Detector import Detector
 import cv2
 import csv
-import pandas as pd
 
 
-def main():
+def build_custom_dataset():
     set_name = input("Dataset Name: ")
     append = "a" if input("Append to file (yes/no): ") == "yes" else "w"
 
@@ -127,4 +126,4 @@ def get_relative_coord(origin: tuple, point: tuple) -> tuple:
 
 
 if __name__ == "__main__":
-    main()
+    build_custom_dataset()

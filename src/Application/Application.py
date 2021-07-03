@@ -1,6 +1,5 @@
 from src.Util.Detector import Detector
 import cv2
-import mediapipe as mp
 from src.Training.Model import GestureModel
 
 

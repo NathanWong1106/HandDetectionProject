@@ -4,7 +4,8 @@ import pandas as pd
 DATA_DIR_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), "Data")
 OUTPUT_FILE_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), "ConcatData", "concat.csv")
 
-def main():
+
+def concatenate_data():
     concat = pd.DataFrame()
 
     print("Concat:")
@@ -15,5 +16,6 @@ def main():
     concat.to_csv(OUTPUT_FILE_PATH, index=False)
     print(f"Saved to: {OUTPUT_FILE_PATH}")
 
+
 if __name__ == "__main__":
-    main()
+    concatenate_data()
