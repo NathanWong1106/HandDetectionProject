@@ -34,3 +34,10 @@ class Detector:
         y = max_y + 1
         cv2.putText(img, gesture, (x, y), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(255, 0, 0),
                     thickness=2)
+
+    def annotate_img(self, img: numpy.ndarray):
+        hands = self.get_landmarks(img).multi_hand_landmarks
+
+        if hands is not None:
+            for hand in hands:
+                self.drawer.draw_landmarks(img, hand, mp.solutions.hands.HAND_CONNECTIONS)

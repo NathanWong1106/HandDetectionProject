@@ -8,9 +8,13 @@ from src.Training.DataBuilder import OUTPUT_FILE_PATH
 
 MODEL_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), "Trained", "trained_model")
 
+# Format: Data Name: TF Label, TF Label: Display Name
 GESTURES = {
-    "Open_Palm": 0, 0: "Open_Palm",
-    "Fist": 1, 1: "Fist"
+    "Open_Palm": 0, 0: "Open Palm",
+    "Fist": 1, 1: "Fist",
+    "Pointing": 2, 2: "Pointing",
+    "Spooder-Man": 3, 3: "Spooder-Man",
+    "Peace": 4, 4: "Peace"
 }
 
 NUM_RECOGNIZED_GESTURES = len(GESTURES) / 2
@@ -47,6 +51,8 @@ def main():
     model = tf.keras.models.Sequential([
         # input layer
         tf.keras.layers.Dense(128, activation="relu"),
+
+        # Dropout of certain nodes protects against overfitting
         tf.keras.layers.Dropout(0.5),
 
         # hidden layers
@@ -59,6 +65,9 @@ def main():
         # softmax activation returns probabilities of results
         tf.keras.layers.Dense(NUM_RECOGNIZED_GESTURES, activation="softmax")
     ])
+
+    # Sparse categorical crossentropy is used for non-binary classification
+    # (to the best of my very limited knowledge lol)
     model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=['accuracy'])
     model.fit(features, labels, epochs=EPOCHS, batch_size=BATCH_SIZE)
 
@@ -66,17 +75,6 @@ def main():
 
     if save:
         model.save(MODEL_PATH, overwrite=True)
-
-    # TODO: Compile and save model
-    # detector = Detector()
-    # img = cv2.imread("./Data/open_palm.jpg")
-    # hand_landmarks = detector.get_landmarks(img).multi_hand_landmarks
-    #
-    # for hand in hand_landmarks:
-    #     arr = get_normalized_relative_landmarks(img, hand)
-    #     arr = np.array(arr).reshape((1, 42))
-    #     predict = model.predict(arr).argmax()
-    #     print(predict)
 
 
 if __name__ == "__main__":
