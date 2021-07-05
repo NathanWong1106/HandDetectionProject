@@ -23,6 +23,16 @@ The program takes webcam video as input, marks the gestures recognized from each
   - Loss function during fitting should be `sparse_categorical_crossentropy` (to the best of my knowledge this is used for non-binary classification?)
 - The resulting model should be able to classify a hand gesture provided an array of values processed in the same way described in Data Collection
 
+## Custom Gesture Recognition
+- Run `src.Training.DatasetConstructor` as main
+  - Enter the name of the file
+  - Press 'c' to toggle data capture
+    - Make sure to give an ample amount of  samples so more features can be gathered by the model
+  - Press 'q' to finish data capture
+- Run `src.Training.DataBuilder` as main
+- Run `src.Training.Model` as main
+  - Say yes to the prompt to save the trained model
+- `src.Application.Application` should use the new model to recognize your custom gesture
 
 ## Dependencies
 - [MediaPipe](https://mediapipe.dev/)
