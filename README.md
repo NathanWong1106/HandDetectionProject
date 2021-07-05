@@ -10,7 +10,7 @@ The program takes webcam video as input, marks the gestures recognized from each
 - Data collection was inspired by [this](https://github.com/kinivi/hand-gesture-recognition-mediapipe) gesture detection library
   - For each landmark:
     - Convert the normalized x,y coordinates into pixel coordinates
-    - Convert the pixel coordinaates into a relative coordinate to the palm
+    - Convert the pixel coordinates into a relative coordinate to the palm
     - Normalize the x,y values respectively according to the highest overall value for the hand
 - Write the data to a CSV file for each gesture
 
