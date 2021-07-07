@@ -10,6 +10,8 @@ import csv
 
 def build_custom_dataset():
     set_name = input("Dataset Name: ")
+    gesture_name = input("Gesture Name: ")
+    is_directional = True if input("Is Gesture Directional (yes/no): ") == "yes" else False
     append = "a" if input("Append to file (yes/no): ") == "yes" else "w"
 
     capture = cv2.VideoCapture(0)
@@ -43,11 +45,16 @@ def build_custom_dataset():
 
             if landmarks is not None and capture_landmarks:
                 landmark_arr = [landmarks]
-                for flipIndex in range(-1, 2):
-                    landmark_arr.append(detector.get_landmarks(cv2.flip(img, flipIndex)).multi_hand_landmarks)
+
+                # Flipping may improve accuracy for gestures without directional context
+                if is_directional:
+                    for flipIndex in range(-1, 2):
+                        landmark_arr.append(detector.get_landmarks(cv2.flip(img, flipIndex)).multi_hand_landmarks)
+                else:
+                    landmark_arr.append(detector.get_landmarks(img).multi_hand_landmarks)
 
                 for elem in landmark_arr:
-                    write_landmarks_to_dataset(img, elem, file, set_name)
+                    write_landmarks_to_dataset(img, elem, file, gesture_name)
 
             if key == ord('q'):
                 cv2.destroyAllWindows()
