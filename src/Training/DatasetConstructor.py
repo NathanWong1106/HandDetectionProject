@@ -48,10 +48,10 @@ def build_custom_dataset():
 
                 # Flipping may improve accuracy for gestures without directional context
                 if is_directional:
+                    landmark_arr.append(detector.get_landmarks(img).multi_hand_landmarks)
+                else:
                     for flipIndex in range(-1, 2):
                         landmark_arr.append(detector.get_landmarks(cv2.flip(img, flipIndex)).multi_hand_landmarks)
-                else:
-                    landmark_arr.append(detector.get_landmarks(img).multi_hand_landmarks)
 
                 for elem in landmark_arr:
                     write_landmarks_to_dataset(img, elem, file, gesture_name)
